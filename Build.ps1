@@ -47,7 +47,10 @@ param(
     [string]$PushMode = "WhenChanged",
     [switch]$PublishModuleAssetsOnly,
     [Parameter(Mandatory = $false)]
-    [string]$LinuxBuildAssetPath = (Resolve-Path "build\linux")
+    [string]$LinuxBuildAssetPath = (Resolve-Path "build\linux"),
+    [Parameter(Mandatory = $false)]
+    [ValidatePattern('[5]+\.[0]+\.[0-9]+\.[0-9]+')]
+    [string]$CoveoVersion = ""
 )
 
 Push-Location build
@@ -327,7 +330,8 @@ if ($IncludeExperimental -or $IncludeModuleAssets)
     foreach ($scv in $SitecoreVersion) {
         .\Download-Module-Prerequisites.ps1 `
         -InstallSourcePath $InstallSourcePath `
-        -SitecoreVersion $scv
+        -SitecoreVersion $scv `
+        -CoveoVersion $CoveoVersion
     }
 }
 

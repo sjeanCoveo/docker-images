@@ -9,14 +9,15 @@ param(
     [ValidateNotNullOrEmpty()]
     [string]$InstallSourcePath = (Join-Path $PSScriptRoot "\packages"),
     [Parameter(Mandatory = $true)]
-    [string]$SitecoreVersion
-
+    [string]$SitecoreVersion,
+    [Parameter(Mandatory = $false)]
+    [string]$CoveoVersion
 )
 $preference = $ProgressPreference
 $ProgressPreference = "SilentlyContinue"
 
 $packages = @{
-    "Sitecore Azure Toolkit 2.5.1-r02522.1082.zip" = "https://sitecoredev.azureedge.net/~/media/AD7EFDD038704CED855039DA8EAF5856.ashx?date=20201214T083612"
+    "Sitecore Azure Toolkit 2.5.1-r02522.1082.zip"     = "https://sitecoredev.azureedge.net/~/media/AD7EFDD038704CED855039DA8EAF5856.ashx?date=20201214T083612"
 }
 
 $packages += $( if ($SitecoreVersion -eq "9.3.0")
@@ -51,15 +52,25 @@ $packages += $( if ($SitecoreVersion -eq "9.3.0")
             "Sitecore Connect for CMP XP for 10.0 v. 3.0.0 rev. 00134.zip"                                    = "https://sitecoredev.azureedge.net/~/media/8443DB808C834186B40D66D58499355B.ashx?date=20200916T110356"
             "Sitecore Connect for CMP XM for 10.0 v. 3.0.0 rev. 00134.zip"                                    = "https://sitecoredev.azureedge.net/~/media/36489D794FA5489CBBB78653F03F81A3.ashx?date=20200916T110356"
             "Sitecore Connect for Sitecore DAM-2.0.0.zip"                                                     = "https://sitecoredev.azureedge.net/~/media/7F118478CF78478087A1DB3EBDF9FBFE.ashx?date=20190626T140600"
-            "Coveo for Sitecore 10.0 5.0.858.1.zip"                                                           = "https://static.cloud.coveo.com/coveoforsitecore/packages/v5.0.858.1/Coveo%20for%20Sitecore%2010.0%205.0.858.1.zip"
-            "Coveo for Sitecore SXA 10.0 5.0.858.1.zip"                                                       = "https://static.cloud.coveo.com/coveoforsitecore/packages/v5.0.858.1/Coveo%20for%20Sitecore%20SXA%2010.0%205.0.858.1.zip"
             "Sitecore Horizon for Azure 10.0.1.zip"                                                           = "https://sitecoredev.azureedge.net/~/media/B1E32BBAEA0B4BCA941628A1F9C348AD.ashx?date=20201214T083840"
         }
     }
-    else {
+    else
+    {
         @{}
     }
 )
+
+if ([int]$SitecoreVersion.Split(".")[0] -ge 10 -and $CoveoVersion -ne "")
+{
+    Write-Output "CoveoVersion: $CoveoVersion"
+    $packages += $(@{
+            "Coveo for Sitecore  10.1 $($CoveoVersion).zip"     = "https://static.cloud.coveo.com/coveoforsitecore/packages/v$($CoveoVersion)/Coveo%20for%20Sitecore%2010.0%20$($CoveoVersion).zip"
+            "Coveo for Sitecore SXA 10.1 $($CoveoVersion).zip" = "https://static.cloud.coveo.com/coveoforsitecore/packages/v$($CoveoVersion)/Coveo%20for%20Sitecore%20SXA%2010.0%20$($CoveoVersion).zip"
+        }
+    )
+}
+
 if ($packages.count -eq 1)
 {
     # Only Sitecore Azure Toolkit was in the packages list, which means we don't have any packages to download.

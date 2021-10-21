@@ -55,6 +55,14 @@ param(
 
 Push-Location build
 
+# Setup the necessary folders and files to include Coveo for Sitecore Image
+if ([int]$SitecoreVersion.Split(".")[0] -ge 10 -and $CoveoVersion -ne "")
+{
+    .\coveo-for-sitecore-tools\Setup-Coveo-Build.ps1 `
+    -SitecoreVersion $SitecoreVersion `
+    -CoveoVersion $CoveoVersion
+}
+
 function Write-Message
 {
     param(
@@ -119,14 +127,6 @@ $rootFolder = "windows"
 if ($OSVersion -eq "linux")
 {
     $rootFolder = "linux"
-}
-
-# Setup the necessary folders and files to include Coveo for Sitecore Image
-if ([int]$SitecoreVersion.Split(".")[0] -ge 10 -and $CoveoVersion -ne "")
-{
-    .\coveo-for-sitecore-tools\Add-To-SitecorePackagesJson.ps1 `
-    -SitecoreVersion $SitecoreVersion `
-    -CoveoVersion $CoveoVersion
 }
 
 $availableSpecs = Get-BuildSpecifications -Path (Join-Path $(Get-Location) $rootFolder)
@@ -382,8 +382,6 @@ SitecoreImageBuilder\Invoke-PackageRestore `
     -Path (Join-Path $(Get-Location) $rootFolder) -Destination $InstallSourcePath -Tags ($tags | Select-Object -ExpandProperty Tag) ` `
     -ExperimentalTagBehavior:(@{$true = "Include"; $false = "Skip" }[$IncludeExperimental -eq $true]) `
     -WhatIf:$WhatIfPreference
-
-# Create URL -> Add to Sitecore-packages -> generate build.json
 
 if ($IncludeExperimental -or $IncludeModuleAssets)
 {

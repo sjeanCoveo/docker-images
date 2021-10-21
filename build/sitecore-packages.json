@@ -1,4 +1,12 @@
 {
+    "Coveo for Sitecore 10.1.0 5.0.971.3.scwdp.zip":  {
+                                                          "url":  "https://static.cloud.coveo.com/coveoforsitecore/packages/v5.0.971.3./Coveo%20for%20Sitecore%2010.0%205.0.971.3.scwdp.zip",
+                                                          "hash":  ""
+                                                      },
+    "Coveo for Sitecore SXA 10.1.0 5.0.971.3.scwdp.zip":  {
+                                                              "url":  "https://static.cloud.coveo.com/coveoforsitecore/packages/v5.0.971.3/Coveo%20for%20Sitecore%20SXA%2010.1%205.0.971.3.zip",
+                                                              "hash":  ""
+                                                          },
     "Data Exchange Framework 5.0.0 rev. 01466.scwdp.zip":  {
                                                                "url":  "",
                                                                "hash":  ""

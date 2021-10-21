@@ -124,12 +124,9 @@ if ($OSVersion -eq "linux")
 # Setup the necessary folders and files to include Coveo for Sitecore Image
 if ([int]$SitecoreVersion.Split(".")[0] -ge 10 -and $CoveoVersion -ne "")
 {
-    $setupScriptPath = "$PSScriptRoot"
-
-    & "$PSScriptRoot\Add-To-SitecorePackagesJson.ps1 -SitecoreVersion $SitecoreVersion -CoveoVersion $CoveoVersion"
-    .\AddCoveoToPackages.ps1 `
-        -SitecoreVersion $SitecoreVersion `
-        -CoveoVersion $CoveoVersion
+    .\coveo-for-sitecore-tools\Add-To-SitecorePackagesJson.ps1 `
+    -SitecoreVersion $SitecoreVersion `
+    -CoveoVersion $CoveoVersion
 }
 
 $availableSpecs = Get-BuildSpecifications -Path (Join-Path $(Get-Location) $rootFolder)

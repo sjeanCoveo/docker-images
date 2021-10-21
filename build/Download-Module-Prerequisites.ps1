@@ -9,9 +9,7 @@ param(
     [ValidateNotNullOrEmpty()]
     [string]$InstallSourcePath = (Join-Path $PSScriptRoot "\packages"),
     [Parameter(Mandatory = $true)]
-    [string]$SitecoreVersion,
-    [Parameter(Mandatory = $false)]
-    [string]$CoveoVersion
+    [string]$SitecoreVersion
 )
 $preference = $ProgressPreference
 $ProgressPreference = "SilentlyContinue"
@@ -60,16 +58,6 @@ $packages += $( if ($SitecoreVersion -eq "9.3.0")
         @{}
     }
 )
-
-if ([int]$SitecoreVersion.Split(".")[0] -ge 10 -and $CoveoVersion -ne "")
-{
-    Write-Output "CoveoVersion: $CoveoVersion"
-    $packages += $(@{
-            "Coveo for Sitecore  10.1 $($CoveoVersion).zip"     = "https://static.cloud.coveo.com/coveoforsitecore/packages/v$($CoveoVersion)/Coveo%20for%20Sitecore%2010.0%20$($CoveoVersion).zip"
-            "Coveo for Sitecore SXA 10.1 $($CoveoVersion).zip" = "https://static.cloud.coveo.com/coveoforsitecore/packages/v$($CoveoVersion)/Coveo%20for%20Sitecore%20SXA%2010.0%20$($CoveoVersion).zip"
-        }
-    )
-}
 
 if ($packages.count -eq 1)
 {

@@ -58,8 +58,13 @@ function Invoke-PackageRestore
     $expected | ForEach-Object {
         $filePath = $_
 
+        $jkhfdsag = "ExperienceGenerator_10.0.scwdp.zip"
+
+        Write-Output $packages.$jkhfdsag
+
         if (Test-Path $filePath -PathType Leaf)
         {
+
             $requiredFile = Get-Item -Path $filePath
 
             if ($requiredFile.Length -gt 0)

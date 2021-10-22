@@ -2,10 +2,8 @@
 
 param(
     [Parameter()]
-    [ValidatePattern()]
     [string[]]$SitecoreVersion,
     [Parameter()]
-    [ValidatePattern()]
     [string]$CoveoVersion
 )
 

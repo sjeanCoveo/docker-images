@@ -55,13 +55,6 @@ param(
 
 Push-Location build
 
-# Setup the necessary folders and files to include Coveo for Sitecore Image
-if ([int]$SitecoreVersion.Split(".")[0] -ge 10 -and $CoveoVersion -ne ""){
-    .\coveo-for-sitecore-tools\Setup-Coveo-Build.ps1 `
-        -SitecoreVersion $SitecoreVersion `
-        -CoveoVersion $CoveoVersion
-}
-
 function Write-Message{
     param(
         [string]$Message

@@ -49,22 +49,20 @@ param(
     [Parameter(Mandatory = $false)]
     [string]$LinuxBuildAssetPath = (Resolve-Path "build\linux"),
     [Parameter(Mandatory = $false)]
-    [ValidatePattern('[5]+\.[0]+\.[0-9]+\.[0-9]+')]
+    [ValidatePattern('[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+')]
     [string]$CoveoVersion = ""
 )
 
 Push-Location build
 
 # Setup the necessary folders and files to include Coveo for Sitecore Image
-if ([int]$SitecoreVersion.Split(".")[0] -ge 10 -and $CoveoVersion -ne "")
-{
+if ([int]$SitecoreVersion.Split(".")[0] -ge 10 -and $CoveoVersion -ne ""){
     .\coveo-for-sitecore-tools\Setup-Coveo-Build.ps1 `
-    -SitecoreVersion $SitecoreVersion `
-    -CoveoVersion $CoveoVersion
+        -SitecoreVersion $SitecoreVersion `
+        -CoveoVersion $CoveoVersion
 }
 
-function Write-Message
-{
+function Write-Message{
     param(
         [string]$Message
     )
@@ -74,8 +72,18 @@ function Write-Message
     Write-Host "$(Get-Date -Format $timeFormat): $($Message)"
 }
 
-if ([string]::IsNullOrEmpty($InstallSourcePath))
-{
+# Setup the necessary folders and files to include Coveo for Sitecore Image
+if ([int]$SitecoreVersion.Split(".")[0] -ge 10 -and $CoveoVersion -ne ""){
+    Write-Message "Completing setup to include Coveo image..."
+
+    .\coveo-for-sitecore-tools\Setup-Coveo-Build.ps1 `
+        -SitecoreVersion $SitecoreVersion `
+        -CoveoVersion $CoveoVersion
+
+    Write-Message "Coveo for Sitecore will be included in the build"
+}
+
+if ([string]::IsNullOrEmpty($InstallSourcePath)){
     $InstallSourcePath = (Join-Path -Path $(Get-Location) -ChildPath "\packages")
 }
 
@@ -97,8 +105,7 @@ $windowsVersionMapping = @{
 
 filter LinuxFilter
 {
-    if ($_.Tag -like "*-linux")
-    {
+    if ($_.Tag -like "*-linux"){
         $_
     }
 }
@@ -106,33 +113,28 @@ filter LinuxFilter
 filter WindowsFilter
 {
     param([string]$Version)
-    if ($_.Tag -match ".*((-windowsservercore){0,1})-$($Version)" -or $_.Tag -match ".*((-nanoserver){0,1})-$($windowsVersionMapping[$Version])")
-    {
+    if ($_.Tag -match ".*((-windowsservercore){0,1})-$($Version)" -or $_.Tag -match ".*((-nanoserver){0,1})-$($windowsVersionMapping[$Version])"){
         $_
     }
 }
 
-filter SitecoreFilter
-{
+filter SitecoreFilter{
     param([string]$Version)
 
     # Sitecore 10.x is picked up via Path, 9.x is picked up via Tag
-    if ($_.Path -like "*$Version*" -or $_.Tag -like "*$Version*")
-    {
+    if ($_.Path -like "*$Version*" -or $_.Tag -like "*$Version*"){
         $_
     }
 }
 
 $rootFolder = "windows"
-if ($OSVersion -eq "linux")
-{
+if ($OSVersion -eq "linux"){
     $rootFolder = "linux"
 }
 
 $availableSpecs = Get-BuildSpecifications -Path (Join-Path $(Get-Location) $rootFolder)
 
-if (!$IncludeExperimental)
-{
+if (!$IncludeExperimental){
     Write-Message "Excluding experimental images."
     $availableSpecs = $availableSpecs | Where-Object { !$_.Experimental }
 }
@@ -168,12 +170,10 @@ $xcSxaTags = $availableTags | Where-Object { $_.Tag -match "(community/)?sitecor
 
 $knownTags = $defaultTags + $xpMiscTags + $xcMiscTags + $assetTags + $xmTags + $xpTags + $xp0Tags + $xcTags + $xmSpeTags + $xp0SpeTags + $xpSpeTags + $xcSpeTags + $xmSxaTags + $xp0SxaTags + $xpSxaTags + $xcSxaTags + $xmJssTags + $xp0JssTags + $xpJssTags + $xpShTags
 
-if ($IncludeModuleAssets)
-{
+if ($IncludeModuleAssets){
     $knownTags += $moduleAssetTags
 }
-else
-{
+else{
     # remove module tags from the avaiableTags to prevent getting processed later
     $availableTags = [System.Linq.Enumerable]::Except([string[]]$availableTags, [string[]]$moduleAssetTags)
 
@@ -182,131 +182,103 @@ else
 # These tags are not yet classified and no dependency check is made at this point to know which image it belongs to.
 $catchAllTags = [System.Linq.Enumerable]::Except([string[]]$availableTags, [string[]]$knownTags)
 
-foreach ($wv in $OSVersion)
-{
+foreach ($wv in $OSVersion){
 
     [regex]$versionReg = "[789]\.[0-9]\.[0-9]"
     #Check if version being built is 7.x, 8.x or 9.x. We only need the defaultTags if building < 10.x
-    if (($SitecoreVersion -match $versionReg).count -gt 0)
-    {
+    if (($SitecoreVersion -match $versionReg).count -gt 0){
         $defaultTags | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
     }
-    if ($Topology -contains "xp")
-    {
+    if ($Topology -contains "xp"){
         $xpMiscTags | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
     }
 
-    if ($Topology -eq "xc")
-    {
+    if ($Topology -eq "xc"){
         $xcMiscTags | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
     }
 
-    foreach ($scv in $SitecoreVersion)
-    {
+    foreach ($scv in $SitecoreVersion){
         $assetTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
-        if ($IncludeModuleAssets)
-        {
+        if ($IncludeModuleAssets){
             $moduleAssetTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
         }
         $catchAllTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
 
-        if ($Topology -eq "xm")
-        {
+        if ($Topology -eq "xm"){
             $xmTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
 
-            if ($wv -eq "linux")
-            {
+            if ($wv -eq "linux"){
                 $xmTags | SitecoreFilter -Version $scv | LinuxFilter | ForEach-Object { $tags.Add($_) > $null }
             }
         }
 
-        if ($Topology -eq "xp")
-        {
+        if ($Topology -eq "xp"){
             $xpTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
 
-            if ($wv -eq "linux")
-            {
+            if ($wv -eq "linux"){
                 $xpTags | SitecoreFilter -Version $scv | LinuxFilter | ForEach-Object { $tags.Add($_) > $null }
             }
         }
 
-        if ($Topology -eq "xc")
-        {
+        if ($Topology -eq "xc"){
             $xcTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
         }
 
-        if ($IncludeSpe)
-        {
-            if ($Topology -eq "xm")
-            {
+        if ($IncludeSpe){
+            if ($Topology -eq "xm"){
                 $xmSpeTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
             }
 
-            if ($Topology -eq "xp0")
-            {
+            if ($Topology -eq "xp0"){
                 $xp0SpeTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
 
-                if ($wv -eq "linux")
-                {
+                if ($wv -eq "linux"){
                     $xp0SpeTags | SitecoreFilter -Version $scv | LinuxFilter | ForEach-Object { $tags.Add($_) > $null }
                 }
             }
-            if ($Topology -eq "xp")
-            {
+            if ($Topology -eq "xp"){
                 $xpSpeTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
 
-                if ($wv -eq "linux")
-                {
+                if ($wv -eq "linux"){
                     $xpSpeTags | SitecoreFilter -Version $scv | LinuxFilter | ForEach-Object { $tags.Add($_) > $null }
                 }
             }
 
-            if ($Topology -eq "xc")
-            {
+            if ($Topology -eq "xc"){
                 $xcSpeTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
             }
         }
 
-        if ($IncludeSxa)
-        {
-            if ($Topology -eq "xm")
-            {
+        if ($IncludeSxa){
+            if ($Topology -eq "xm"){
                 $xmSxaTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
             }
-            if ($Topology -eq "xp0")
-            {
+            if ($Topology -eq "xp0"){
                 $xp0SxaTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
 
-                if ($wv -eq "linux")
-                {
+                if ($wv -eq "linux"){
                     $xp0SxaTags | SitecoreFilter -Version $scv | LinuxFilter | ForEach-Object { $tags.Add($_) > $null }
                 }
             }
-            if ($Topology -eq "xp")
-            {
+            if ($Topology -eq "xp"){
                 $xpSxaTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
 
-                if ($wv -eq "linux")
-                {
+                if ($wv -eq "linux"){
                     $xpSxaTags | SitecoreFilter -Version $scv | LinuxFilter | ForEach-Object { $tags.Add($_) > $null }
                 }
             }
 
-            if ($Topology -eq "xc")
-            {
+            if ($Topology -eq "xc"){
                 $xcSxaTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
             }
         }
 
-        if ($IncludeJss)
-        {
-            if ($Topology -eq "xm")
-            {
+        if ($IncludeJss){
+            if ($Topology -eq "xm"){
                 $xmJssTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
             }
 
-            if ($Topology -eq "xp0")
-            {
+            if ($Topology -eq "xp0"){
                 $xp0JssTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
             }
 
@@ -320,10 +292,8 @@ foreach ($wv in $OSVersion)
             }
         }
 
-        if ($IncludeSh)
-        {
-            if ($Topology -eq "xp")
-            {
+        if ($IncludeSh){
+            if ($Topology -eq "xp"){
                 $xpShTags | SitecoreFilter -Version $scv | WindowsFilter -Version $wv | ForEach-Object { $tags.Add($_) > $null }
             }
         }
@@ -332,40 +302,33 @@ foreach ($wv in $OSVersion)
 
 [System.Collections.ArrayList]$tags = $tags | Sort-Object -Property @{Expression = "Tag" } -Unique
 
-if ($tags -and $OutputJson)
-{
+if ($tags -and $OutputJson){
     # if -OutputJson, send $tags for formatting and output to working folder
     $json = Format-BuildOutputToJson $($tags | Select-Object -ExpandProperty Tag)
     $json | Set-Content -Path (Join-Path $PWD "docker-images.json") -Force
 }
 
-if ($SkipExistingImage)
-{
+if ($SkipExistingImage){
     Write-Message "Existing images will be excluded from the build."
     $existingImages = docker images --format '{{.Repository}}:{{.Tag}}' --filter 'dangling=false'
 
-    foreach ($existingImage in $existingImages)
-    {
-        if (($tags | Select-Object -ExpandProperty Tag) -contains $existingImage)
-        {
+    foreach ($existingImage in $existingImages){
+        if (($tags | Select-Object -ExpandProperty Tag) -contains $existingImage){
             $tags.Remove($($tags | Where-Object { $_.Tag -eq $existingImage }))
         }
     }
 }
 
-if ($tags)
-{
+if ($tags){
     Write-Message "The following images will be built:"
     $tags | Select-Object -ExpandProperty Tag
 }
-else
-{
+else{
     Write-Message "No images need to be built."
     exit
 }
 
-if ($PublishModuleAssetsOnly)
-{
+if ($PublishModuleAssetsOnly){
     SitecoreImageBuilder\Publish-LinuxModuleAssetFiles `
         -Path (Join-Path $(Get-Location) $rootFolder) `
         -InstallSourcePath $InstallSourcePath `
@@ -383,8 +346,7 @@ SitecoreImageBuilder\Invoke-PackageRestore `
     -ExperimentalTagBehavior:(@{$true = "Include"; $false = "Skip" }[$IncludeExperimental -eq $true]) `
     -WhatIf:$WhatIfPreference
 
-if ($IncludeExperimental -or $IncludeModuleAssets)
-{
+if ($IncludeExperimental -or $IncludeModuleAssets){
     # restore any missing experimental packages
 
     foreach ($scv in $SitecoreVersion)

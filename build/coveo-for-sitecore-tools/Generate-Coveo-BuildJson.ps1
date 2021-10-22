@@ -76,12 +76,5 @@ $sxaBuildJson = @"
 }
 "@
 
-if (!(Test-Path -Path "$destinationFolder\build.json" -PathType Leaf))
-{
-    New-Item -Path $destinationFolder -Name "build.json" -ItemType "file" -Value ($buildJson)
-}
-
-if (!(Test-Path -Path "$sxaDestinationFolder\build.json" -PathType Leaf))
-{
-    New-Item -Path $sxaDestinationFolder -Name "build.json" -ItemType "file" -Value ($sxaBuildJson)
-}
+New-Item -Path $destinationFolder -Name "build.json" -ItemType "file" -Value ($buildJson) -Force | Out-Null
+New-Item -Path $sxaDestinationFolder -Name "build.json" -ItemType "file" -Value ($sxaBuildJson) -Force | Out-Null

@@ -66,14 +66,19 @@ function Write-Message{
 }
 
 # Setup the necessary folders and files to include Coveo for Sitecore Image
-if ([int]$SitecoreVersion.Split(".")[0] -ge 10 -and $CoveoVersion -ne ""){
-    Write-Message "Completing setup to include Coveo image..."
+if ($CoveoVersion -ne ""){
+    Write-Host "Adjusting setup to include Coveo image..."
 
-    .\coveo-for-sitecore-tools\Setup-Coveo-Build.ps1 `
-        -SitecoreVersion $SitecoreVersion `
-        -CoveoVersion $CoveoVersion
+    foreach ($scv in $SitecoreVersion){
+        if([int]$scv.Split(".")[0] -ge 10){
+            .\coveo-for-sitecore-tools\Setup-Coveo-Build.ps1 `
+                -SitecoreVersion $scv `
+                -CoveoVersion $CoveoVersion `
+                -IncludeSxa:$IncludeSxa
+        }
+    }
 
-    Write-Message "Coveo for Sitecore will be included in the build"
+    Write-Host "Coveo for Sitecore will be included in the build"
 }
 
 if ([string]::IsNullOrEmpty($InstallSourcePath)){
@@ -342,8 +347,7 @@ SitecoreImageBuilder\Invoke-PackageRestore `
 if ($IncludeExperimental -or $IncludeModuleAssets){
     # restore any missing experimental packages
 
-    foreach ($scv in $SitecoreVersion)
-    {
+    foreach ($scv in $SitecoreVersion){
         .\Download-Module-Prerequisites.ps1 `
             -InstallSourcePath $InstallSourcePath `
             -SitecoreVersion $scv

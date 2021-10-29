@@ -4,12 +4,13 @@ param(
     [Parameter()]
     [string[]]$SitecoreVersion,
     [Parameter()]
-    [string]$CoveoVersion
+    [string]$CoveoVersion,
+    [Parameter()]
+    [switch]$IncludeSxa
 )
 
-& "$PSScriptRoot\Add-To-SitecorePackagesJson.ps1" -SitecoreVersion $SitecoreVersion -CoveoVersion $CoveoVersion
-& "$PSScriptRoot\Generate-Coveo-Assets-Folders.ps1" -SitecoreVersion $SitecoreVersion
-& "$PSScriptRoot\Generate-Coveo-BuildJson.ps1" -SitecoreVersion $SitecoreVersion -CoveoVersion $CoveoVersion
+Write-Host "SitecoreVersion=$SitecoreVersion CoveoVersion=$CoveoVersion IncludeSxa=$IncludeSxa"
 
-
-
+& "$PSScriptRoot\Add-To-SitecorePackagesJson.ps1" -SitecoreVersion $SitecoreVersion -CoveoVersion $CoveoVersion -IncludeSxa:$IncludeSxa
+& "$PSScriptRoot\Generate-Coveo-Assets-Folders.ps1" -SitecoreVersion $SitecoreVersion -IncludeSxa:$IncludeSxa
+& "$PSScriptRoot\Generate-Coveo-BuildJson.ps1" -SitecoreVersion $SitecoreVersion -CoveoVersion $CoveoVersion -IncludeSxa:$IncludeSxa

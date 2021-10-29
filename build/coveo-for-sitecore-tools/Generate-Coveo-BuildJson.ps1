@@ -4,7 +4,9 @@ param (
     [Parameter()]
     [string[]]$SitecoreVersion,
     [Parameter()]
-    [string]$CoveoVersion
+    [string]$CoveoVersion,
+    [Parameter()]
+    [switch]$IncludeSxa
 )
 
 $parentFolderPath = (get-item $PSScriptRoot).parent.FullName
@@ -77,4 +79,7 @@ $sxaBuildJson = @"
 "@
 
 New-Item -Path $destinationFolder -Name "build.json" -ItemType "file" -Value ($buildJson) -Force | Out-Null
-New-Item -Path $sxaDestinationFolder -Name "build.json" -ItemType "file" -Value ($sxaBuildJson) -Force | Out-Null
+
+if ($IncludeSxa){
+    New-Item -Path $sxaDestinationFolder -Name "build.json" -ItemType "file" -Value ($sxaBuildJson) -Force | Out-Null
+}

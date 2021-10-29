@@ -4,7 +4,9 @@ param(
     [Parameter()]
     [string[]]$SitecoreVersion,
     [Parameter()]
-    [string]$CoveoVersion
+    [string]$CoveoVersion,
+    [Parameter()]
+    [switch]$IncludeSxa
 )
 
 $parentPath = (get-item $PSScriptRoot).parent.FullName
@@ -29,11 +31,9 @@ if (!$propertyExists){
     $json | ConvertTo-Json | Set-Content $sitecorePackagesPath
 }
 
-if (!$sxaPropertyExists){
+if ($IncludeSxa -and !$sxaPropertyExists){
     $json | Add-Member -Type NoteProperty -Name $sxaPropertyKey -Value $sxaPropertyValue
     $json | ConvertTo-Json | Set-Content $sitecorePackagesPath
 }
 
 & "$parentPath\contributing\Sort-SitecorePackagesJson.ps1"
-
-

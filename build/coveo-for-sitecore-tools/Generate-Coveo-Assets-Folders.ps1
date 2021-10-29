@@ -2,7 +2,9 @@
 
 param (
     [Parameter()]
-    [string[]]$SitecoreVersion
+    [string[]]$SitecoreVersion,
+    [Parameter()]
+    [switch]$IncludeSxa
 )
 
 $parentFolderPath = (get-item $PSScriptRoot).parent.FullName
@@ -16,10 +18,15 @@ Remove-Item $coveoSxaAssetsFolderPath\*.zip | Out-Null
 New-Item -Path $coveoAssetsFolderPath -ItemType directory -Force | Out-Null
 New-Item -Path "$coveoAssetsFolderPath\tools" -ItemType directory -Force | Out-Null
 
-#Creating required folders for Coveo SXA assets
-New-Item -Path $coveoSxaAssetsFolderPath -ItemType directory -Force | Out-Null
-New-Item -Path "$coveoSxaAssetsFolderPath\tools" -ItemType directory -Force | Out-Null
+if ($IncludeSxa){
+    #Creating required folders for Coveo SXA assets
+    New-Item -Path $coveoSxaAssetsFolderPath -ItemType directory -Force | Out-Null
+    New-Item -Path "$coveoSxaAssetsFolderPath\tools" -ItemType directory -Force | Out-Null
+}
 
 #Copying the Extract-Resource.ps1 script into the tools folders
 Copy-Item "$PSScriptRoot\Extract-Resources.ps1" -Destination "$coveoAssetsFolderPath\tools" | Out-Null
-Copy-Item "$PSScriptRoot\Extract-Resources.ps1" -Destination "$coveoSxaAssetsFolderPath\tools" | Out-Null
+
+if ($IncludeSxa){
+    Copy-Item "$PSScriptRoot\Extract-Resources.ps1" -Destination "$coveoSxaAssetsFolderPath\tools" | Out-Null
+}

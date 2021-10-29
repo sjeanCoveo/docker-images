@@ -11,8 +11,13 @@ $parentFolderPath = (get-item $PSScriptRoot).parent.FullName
 $coveoAssetsFolderPath = "$parentFolderPath\windows\$SitecoreVersion\modules\coveo-assets"
 $coveoSxaAssetsFolderPath = "$parentFolderPath\windows\$SitecoreVersion\modules\coveo-sxa-assets"
 
-Remove-Item $coveoAssetsFolderPath\*.zip | Out-Null
-Remove-Item $coveoSxaAssetsFolderPath\*.zip | Out-Null
+if(Test-Path $coveoAssetsFolderPath\*.zip -PathType Leaf){
+    Remove-Item $coveoAssetsFolderPath\*.zip | Out-Null
+}
+
+if(Test-Path $coveoSxaAssetsFolderPath\*.zip -PathType Leaf){
+    Remove-Item $coveoSxaAssetsFolderPath\*.zip | Out-Null
+}
 
 #Creating required folders for Coveo assets
 New-Item -Path $coveoAssetsFolderPath -ItemType directory -Force | Out-Null

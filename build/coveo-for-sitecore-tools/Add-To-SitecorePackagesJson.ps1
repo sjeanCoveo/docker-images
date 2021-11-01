@@ -1,6 +1,9 @@
 [CmdletBinding(SupportsShouldProcess = $true)]
 
 param(
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [string]$InstallSourcePath,
     [Parameter()]
     [string[]]$SitecoreVersion,
     [Parameter()]
@@ -20,6 +23,8 @@ $propertyValue = [ordered]@{ url = $coveoPackageUrl; hash = ""; }
 
 $sxaPropertyKey = "Coveo for Sitecore SXA $SitecoreVersion $CoveoVersion.scwdp.zip"
 $sxaPropertyValue = [ordered]@{ url = $coveoSxaPackageUrl; hash = ""; }
+
+& "$PSScriptRoot\Convert-Coveo-Sxa-to-Wdp.ps1" -InstallSourcePath $InstallSourcePath -SitecoreVersion $SitecoreVersion -CoveoVersion $CoveoVersion
 
 $json = Get-Content $sitecorePackagesPath | Out-String | ConvertFrom-Json
 

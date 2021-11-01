@@ -65,6 +65,10 @@ function Write-Message{
     Write-Host "$(Get-Date -Format $timeFormat): $($Message)"
 }
 
+if ([string]::IsNullOrEmpty($InstallSourcePath)){
+    $InstallSourcePath = (Join-Path -Path $(Get-Location) -ChildPath "\packages")
+}
+
 # Setup the necessary folders and files to include Coveo for Sitecore Image
 if ($CoveoVersion -ne ""){
     Write-Host "Adjusting setup to include Coveo image..."
@@ -72,6 +76,7 @@ if ($CoveoVersion -ne ""){
     foreach ($scv in $SitecoreVersion){
         if([int]$scv.Split(".")[0] -ge 10){
             .\coveo-for-sitecore-tools\Setup-Coveo-Build.ps1 `
+                -InstallSourcePath $InstallSourcePath `
                 -SitecoreVersion $scv `
                 -CoveoVersion $CoveoVersion `
                 -IncludeSxa:$IncludeSxa
@@ -79,10 +84,6 @@ if ($CoveoVersion -ne ""){
     }
 
     Write-Host "Coveo for Sitecore will be included in the build"
-}
-
-if ([string]::IsNullOrEmpty($InstallSourcePath)){
-    $InstallSourcePath = (Join-Path -Path $(Get-Location) -ChildPath "\packages")
 }
 
 $ErrorActionPreference = "STOP"
@@ -353,17 +354,6 @@ if ($IncludeExperimental -or $IncludeModuleAssets){
             -SitecoreVersion $scv
     }
 }
-
-# if ($CoveoVersion -ne "" -and $IncludeSxa){
-#     foreach ($scv in $SitecoreVersion){
-#         if([int]$scv.Split(".")[0] -ge 10){
-#             .\coveo-for-sitecore-tools\Convert-Coveo-Sxa-to-Wdp.ps1 `
-#                 -InstallSourcePath $InstallSourcePath `
-#                 -SitecoreVersion $scv `
-#                 -CoveoVersion $CoveoVersion `
-#         }
-#     }
-# }
 
 # start the build
 SitecoreImageBuilder\Invoke-Build `

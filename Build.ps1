@@ -354,6 +354,17 @@ if ($IncludeExperimental -or $IncludeModuleAssets){
     }
 }
 
+# if ($CoveoVersion -ne "" -and $IncludeSxa){
+#     foreach ($scv in $SitecoreVersion){
+#         if([int]$scv.Split(".")[0] -ge 10){
+#             .\coveo-for-sitecore-tools\Convert-Coveo-Sxa-to-Wdp.ps1 `
+#                 -InstallSourcePath $InstallSourcePath `
+#                 -SitecoreVersion $scv `
+#                 -CoveoVersion $CoveoVersion `
+#         }
+#     }
+# }
+
 # start the build
 SitecoreImageBuilder\Invoke-Build `
     -Path (Join-Path $(Get-Location) $rootFolder) `

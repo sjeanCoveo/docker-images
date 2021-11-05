@@ -26,31 +26,20 @@ $sxaPropertyValue = [ordered]@{ url = $coveoSxaPackageUrl; hash = ""; }
 
 $json = Get-Content $sitecorePackagesPath | Out-String | ConvertFrom-Json
 
-if ($IncludeSxa) {
-    $sxaPropertyExists = $json.PSobject.Properties.name -match "$sxaPropertyKey"
-
-    if (!$sxaPropertyExists){
-        $json | Add-Member -Type NoteProperty -Name $sxaPropertyKey -Value $sxaPropertyValue
-        $json | ConvertTo-Json | Set-Content $sitecorePackagesPath
-    }
-}
-
-$json = Get-Content $sitecorePackagesPath | Out-String | ConvertFrom-Json
-
-if ($IncludeSxa) {
-    $sxaPropertyExists = $json.PSobject.Properties.name -match "$sxaPropertyKey"
-
-    if (!$sxaPropertyExists){
-        $json | Add-Member -Type NoteProperty -Name $sxaPropertyKey -Value $sxaPropertyValue
-        $json | ConvertTo-Json | Set-Content $sitecorePackagesPath
-    }
-}
-
 $propertyExists = $json.PSobject.Properties.name -match "$propertyKey"
 
 if (!$propertyExists) {
     $json | Add-Member -Type NoteProperty -Name $propertyKey -Value $propertyValue
     $json | ConvertTo-Json | Set-Content $sitecorePackagesPath
+}
+
+if ($IncludeSxa) {
+    $sxaPropertyExists = $json.PSobject.Properties.name -match "$sxaPropertyKey"
+
+    if (!$sxaPropertyExists){
+        $json | Add-Member -Type NoteProperty -Name $sxaPropertyKey -Value $sxaPropertyValue
+        $json | ConvertTo-Json | Set-Content $sitecorePackagesPath
+    }
 }
 
 & "$parentPath\contributing\Sort-SitecorePackagesJson.ps1"

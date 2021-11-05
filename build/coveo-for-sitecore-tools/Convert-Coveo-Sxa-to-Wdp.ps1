@@ -1,69 +1,53 @@
-#This script is for temporary use only as Coveo will release a WDP package for Coveo SXA in their next release
 [CmdletBinding(SupportsShouldProcess = $true)]
 
 param(
-    [Parameter(Mandatory = $true)]
-    [string]$CoveoVersion,
-    [Parameter(Mandatory = $true)]
-    [string]$SitecoreVersion
-
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [string]$InstallSourcePath,
+    [Parameter()]
+    [string[]]$SitecoreVersion,
+    [Parameter()]
+    [string]$CoveoVersion
 )
 
-$buildFolderPath = (Get-Item $PSScriptRoot).parent.FullName
-$coveoSxaPackagePath = (Join-Path $buildFolderPath "\windows\$Coveo for Sitecore SXA $SitecoreVersion $CoveoVersion.zip")
+$coveoSxaPackageUrl = "https://static.cloud.coveo.com/coveoforsitecore/packages/v$CoveoVersion/Coveo%20for%20Sitecore%20SXA%2010.1%20$CoveoVersion.zip"
+$sxaZipFileName = "Coveo for Sitecore SXA $SitecoreVersion $CoveoVersion.zip"
+$filePath = Join-Path $InstallSourcePath $sxaZipFileName
 
+Write-Host ("Downloading '{0}' to '{1}'..." -f $coveoSxaPackageUrl, $filePath)
 
+Invoke-WebRequest -Uri $coveoSxaPackageUrl -OutFile $filePath -UseBasicParsing
 
-# Install Azure toolkit
-Write-Host "Prepare Azure toolkit"
+$zipFilePath = Join-Path $InstallSourcePath $sxaZipFileName
 
-$sat = (Join-Path $buildFolderPath "tools\sat")
+if (Test-Path $zipFilePath -PathType Leaf){
+    # Install Azure toolkit
+    Write-Host "Prepare Azure toolkit"
 
-Write-Host "Sitecore Azure Toolkit directory $sat"
+    $sat = (Join-Path (Get-Item $PSScriptRoot).Parent.FullName "tools\sat")
 
-# Ensure Azure SAT destination exists
-if (!(Test-Path $sat -PathType "Container"))
-{
-    Write-Host "Create SAT directory $sat"
-    New-Item $sat -ItemType Directory -WhatIf:$false | Out-Null
-}
+    Write-Host "Sitecore Azure Toolkit directory $sat"
 
-if (!(Test-Path (Join-Path $sat "tools\Sitecore.Cloud.Cmdlets.dll") -PathType Leaf))
-{
-    # extract Sitecore Azure Toolkit
-    Get-ChildItem -Path $Destination -Filter "*Azure Toolkit*" -Recurse | Select-Object -First 1 | Expand-Archive -DestinationPath $sat -Force
-}
-# import Azure toolkit
-Write-Host "Import Sitecore Azure Toolkit"
-Import-Module (Join-Path $sat "tools\Sitecore.Cloud.Cmdlets.dll")  -Force
-
-# Convert package
-
-if ($fileName -notlike "*Azure Toolkit*")
-{
-    $filePath = Join-Path $Destination $fileName
-    $expectedScwdpFilePath = $filePath -replace ".zip", ".scwdp.zip"
-
-    if (Test-Path $expectedScwdpFilePath -PathType Leaf)
+    # Ensure Azure SAT destination exists
+    if (!(Test-Path $sat -PathType "Container"))
     {
-        Write-Host ("Required WDP found: '{0}'" -f $expectedScwdpFilePath)
+        Write-Host "Create SAT directory $sat"
+        New-Item $sat -ItemType Directory -WhatIf:$false | Out-Null
     }
-    else
-    {
-        if ($PSCmdlet.ShouldProcess($filePath))
-        {
-            if (Test-Path $filePath -PathType Leaf)
-            {
-                    Write-Host "Convert to WDP $filePath"
-                    ConvertTo-SCModuleWebDeployPackage -Path $filePath -Destination $Destination -Force
-            }
-            else
-            {
-                Throw "Cannot find file: $filePath"
-            }
-        }
-    }
-}
 
-$ProgressPreference = $preference
-Write-Host "DONE"
+    $fileUrl = "https://sitecoredev.azureedge.net/~/media/AD7EFDD038704CED855039DA8EAF5856.ashx?date=20201214T083612"
+    $filePath = "Sitecore Azure Toolkit 2.5.1-r02522.1082.zip"
+
+    Invoke-WebRequest -Uri $fileUrl -OutFile (Join-Path $sat $filePath) -UseBasicParsing
+
+    if (!(Test-Path (Join-Path $sat "tools\Sitecore.Cloud.Cmdlets.dll") -PathType Leaf)) {
+        # extract Sitecore Azure Toolkit
+        Get-ChildItem -Path $sat -Filter "*Azure Toolkit*" -Recurse | Select-Object -First 1 | Expand-Archive -DestinationPath $sat -Force
+    }
+
+    Write-Host "Import Sitecore Azure Toolkit"
+    Import-Module (Join-Path $sat "tools\Sitecore.Cloud.Cmdlets.dll")  -Force
+
+    Write-Host "Convert to WDP $zipFilePath"
+    ConvertTo-SCModuleWebDeployPackage -Path $zipFilePath -Destination $InstallSourcePath -Force
+}

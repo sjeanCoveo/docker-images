@@ -20,7 +20,7 @@ Invoke-WebRequest -Uri $coveoSxaPackageUrl -OutFile $filePath -UseBasicParsing
 
 $zipFilePath = Join-Path $InstallSourcePath $sxaZipFileName
 
-if (Test-Path $zipFilePath -PathType Leaf){
+if (Test-Path $zipFilePath -PathType Leaf) {
     # Install Azure toolkit
     Write-Host "Prepare Azure toolkit"
 
@@ -29,8 +29,7 @@ if (Test-Path $zipFilePath -PathType Leaf){
     Write-Host "Sitecore Azure Toolkit directory $sat"
 
     # Ensure Azure SAT destination exists
-    if (!(Test-Path $sat -PathType "Container"))
-    {
+    if (!(Test-Path $sat -PathType "Container")) {
         Write-Host "Create SAT directory $sat"
         New-Item $sat -ItemType Directory -WhatIf:$false | Out-Null
     }
@@ -46,7 +45,7 @@ if (Test-Path $zipFilePath -PathType Leaf){
     }
 
     Write-Host "Import Sitecore Azure Toolkit"
-    Import-Module (Join-Path $sat "tools\Sitecore.Cloud.Cmdlets.dll")  -Force
+    Import-Module (Join-Path $sat "tools\Sitecore.Cloud.Cmdlets.dll") -Force
 
     Write-Host "Convert to WDP $zipFilePath"
     ConvertTo-SCModuleWebDeployPackage -Path $zipFilePath -Destination $InstallSourcePath -Force

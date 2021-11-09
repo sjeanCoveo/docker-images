@@ -79,7 +79,6 @@ if ($CoveoVersion -ne "") {
     foreach ($scv in $SitecoreVersion) {
         if ([int]$scv.Split(".")[0] -ge 10) {
             .\coveo-for-sitecore-tools\Setup-Coveo-Build.ps1 `
-                -InstallSourcePath $InstallSourcePath `
                 -SitecoreVersion $scv `
                 -CoveoVersion $CoveoVersion `
                 -IncludeSxa:$IncludeSxa

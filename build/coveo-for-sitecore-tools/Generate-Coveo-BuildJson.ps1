@@ -57,7 +57,7 @@ $sxaBuildJson = @"
 "@
 
 
-if($SitecoreVersion -eq "10.0.1"){
+if ($SitecoreVersion -eq "10.0.1") {
     $buildJson = @"
 {
     "tags": [
@@ -102,6 +102,6 @@ if($SitecoreVersion -eq "10.0.1"){
 
 New-Item -Path $destinationFolder -Name "build.json" -ItemType "file" -Value ($buildJson) -Force | Out-Null
 
-if ($IncludeSxa){
+if ($IncludeSxa) {
     New-Item -Path $sxaDestinationFolder -Name "build.json" -ItemType "file" -Value ($sxaBuildJson) -Force | Out-Null
 }

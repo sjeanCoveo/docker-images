@@ -10,7 +10,7 @@ param (
 $parentFolderPath = (get-item $PSScriptRoot).parent.FullName
 $coveoAssetsFolderPath = "$parentFolderPath\windows\$SitecoreVersion\modules\coveo-assets"
 
-if(Test-Path $coveoAssetsFolderPath\*.zip -PathType Leaf) {
+if (Test-Path $coveoAssetsFolderPath\*.zip -PathType Leaf) {
     Remove-Item $coveoAssetsFolderPath\*.zip | Out-Null
 }
 
@@ -24,7 +24,7 @@ Copy-Item "$PSScriptRoot\Extract-Resources.ps1" -Destination "$coveoAssetsFolder
 if ($IncludeSxa) {
     $coveoSxaAssetsFolderPath = "$parentFolderPath\windows\$SitecoreVersion\modules\coveo-sxa-assets"
 
-    if(Test-Path $coveoSxaAssetsFolderPath\*.zip -PathType Leaf) {
+    if (Test-Path $coveoSxaAssetsFolderPath\*.zip -PathType Leaf) {
         Remove-Item $coveoSxaAssetsFolderPath\*.zip | Out-Null
     }
 

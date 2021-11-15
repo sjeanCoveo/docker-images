@@ -276,6 +276,7 @@ Example:
 Note that the `-IncludeModuleAssets` parameter is mandatory when using the `-CoveoVersion` parameter.
 
 When using the `-IncludeSxa` parameter, Coveo for Sitecore SXA will also be included.
+
 IMPORTANT: Including the Coveo for Sitecore SXA package requires the following dependencies to convert the `.zip` file to a `.scwdp.zip`:
 
 - Microsoft SQL Server 2012 Data-Tier Application Framework

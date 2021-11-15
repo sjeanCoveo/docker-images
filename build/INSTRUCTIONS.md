@@ -276,10 +276,10 @@ Example:
 Note that the `-IncludeModuleAssets` parameter is mandatory when using the `-CoveoVersion` parameter.
 
 When using the `-IncludeSxa` parameter, Coveo for Sitecore SXA will also be included.
-IMPORTANT: Including the Coveo for Sitecore SXA package requires the following dependencies.
+IMPORTANT: Including the Coveo for Sitecore SXA package requires the following dependencies to convert the `.zip` file to a `.scwdp.zip`:
 
 - Microsoft SQL Server 2012 Data-Tier Application Framework
 - SQL Server 2012 Transact-SQL ScriptDom
 - SQL Server System CLR Types 11.0
 
-If you face this [error](https://docs.microsoft.com/en-us/iis/publish/troubleshooting-web-deploy/web-deploy-error-codes#ERROR_DACFX_NEEDED_FOR_SQL_PROVIDER) it is likely that you are missing at least one of those dependencies.
+If you face this error ([ERROR_DACFX_NEEDED_FOR_SQL_PROVIDER](https://docs.microsoft.com/en-us/iis/publish/troubleshooting-web-deploy/web-deploy-error-codes#ERROR_DACFX_NEEDED_FOR_SQL_PROVIDER)) it is likely that you are missing at least one of those dependencies.

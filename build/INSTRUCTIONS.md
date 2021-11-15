@@ -277,7 +277,7 @@ Note that the `-IncludeModuleAssets` parameter is mandatory when using the `-Cov
 
 When using the `-IncludeSxa` parameter, Coveo for Sitecore SXA will also be included.
 
-IMPORTANT: Including the Coveo for Sitecore SXA package requires the following dependencies to convert the `.zip` file to a `.scwdp.zip`:
+IMPORTANT: Including the Coveo for Sitecore SXA package requires the following dependencies to convert the `.zip` file to a `.scwdp.zip` file:
 
 - Microsoft SQL Server 2012 Data-Tier Application Framework
 - SQL Server 2012 Transact-SQL ScriptDom

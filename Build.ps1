@@ -340,18 +340,6 @@ SitecoreImageBuilder\Invoke-PackageRestore `
     -ExperimentalTagBehavior:(@{$true = "Include"; $false = "Skip" }[$IncludeExperimental -eq $true]) `
     -WhatIf:$WhatIfPreference
 
-#Convert Coveo for Sitecore SXA package to wdp
-if ($CoveoVersion -ne "" -and $IncludeSxa) {
-    foreach ($scv in $SitecoreVersion) {
-        if ([int]$scv.Split(".")[0] -ge 10) {
-            & "$PSScriptRoot\build\coveo-for-sitecore-tools\Convert-Coveo-Sxa-to-Wdp.ps1" `
-                -InstallSourcePath $InstallSourcePath `
-                -SitecoreVersion $SitecoreVersion `
-                -CoveoVersion $CoveoVersion
-        }
-    }
-}
-
 if ($IncludeExperimental -or $IncludeModuleAssets) {
     # restore any missing experimental packages
 

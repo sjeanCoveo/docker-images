@@ -21,7 +21,7 @@ $json | Add-Member -Type NoteProperty -Name $propertyKey -Value $propertyValue -
 
 if ($IncludeSxa) {
     $sxaWdpPropertyKey = "Coveo for Sitecore SXA $SitecoreVersion $CoveoVersion.scwdp.zip"
-    $sxaWdpPropertyValue = [ordered]@{ url = ""; hash = ""; }
+    $sxaWdpPropertyValue = [ordered]@{ url = "https://static.cloud.coveo.com/coveoforsitecore/packages/v$CoveoVersion/Coveo%20for%20Sitecore%20SXA%2010.1%20$CoveoVersion.scwdp.zip"; hash = ""; }
 
     $json | Add-Member -Type NoteProperty -Name $sxaWdpPropertyKey -Value $sxaWdpPropertyValue -Force
 }

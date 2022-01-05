@@ -13,7 +13,7 @@ $parentPath = (get-item $PSScriptRoot).parent.FullName
 $sitecorePackagesPath = "$parentPath\sitecore-packages.json"
 $json = Get-Content $sitecorePackagesPath | Out-String | ConvertFrom-Json
 
-$coveoPackageUrl = "https://static.cloud.coveo.com/coveoforsitecore/packages/v$CoveoVersion./Coveo%20for%20Sitecore%2010.0%20$CoveoVersion.scwdp.zip"
+$coveoPackageUrl = "https://static.cloud.coveo.com/coveoforsitecore/packages/v$CoveoVersion/Coveo%20for%20Sitecore%2010.0%20$CoveoVersion.scwdp.zip"
 $propertyKey = "Coveo for Sitecore $SitecoreVersion $CoveoVersion.scwdp.zip"
 $propertyValue = [ordered]@{ url = $coveoPackageUrl; hash = ""; }
 
